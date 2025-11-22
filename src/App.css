@@ -1,0 +1,38 @@
+.otp-btn {
+  width: 120px;
+  height: 40px;
+  border: none;
+  background-color: #007bff;
+  color: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+}
+
+.otp-btn.disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #fff;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+.signup-btn.disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}

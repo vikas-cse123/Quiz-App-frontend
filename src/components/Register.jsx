@@ -11,7 +11,11 @@ const Register = () => {
     password: "",
     otp: "",
   });
-  const [isOtpSend, setIsOtpSend] = useState(false);
+  const [isLoading, setIsLoading] = useState({
+    register: false,
+    sendOtp: false,
+  });
+  const [isOtpSend, setIsOtpSend] = useState(false); ////
   const [errors, setErrors] = useState({});
   const registerSchema = z.object({
     name: z
@@ -44,19 +48,25 @@ const Register = () => {
       toast("Click on Send OTP button to get OTP.");
       return;
     }
-    const data = await callApi("POST", "/user/signup", formData);
+    setIsLoading((prevState) => ({ ...prevState, register: true }));
+
+    const data = await callApi("POST", "/user/signup", formData, "");
     console.log(data);
     if (data.success) {
       toast.success(data.message);
     } else {
       toast.error(data.message);
     }
+    setIsLoading((prevState) => ({ ...prevState, register: false }));
   };
   const sendOtp = async () => {
     try {
+      setIsLoading((prevState) => ({ ...prevState, sendOtp: true }));
       const result = emailSchema.safeParse({ email: formData.email });
       if (!result.success) {
         handleInputsErros(formData, result, setErrors);
+        setIsLoading((prevState) => ({ ...prevState, sendOtp: false }));
+
         return;
       }
 
@@ -70,9 +80,12 @@ const Register = () => {
       } else {
         toast.error(data.message);
       }
+      setIsLoading((prevState) => ({ ...prevState, sendOtp: false }));
+
       console.log(data);
     } catch (error) {
       console.log(error);
+      setIsLoading((prevState) => ({ ...prevState, sendOtp: false }));
     }
   };
   return (
@@ -97,8 +110,13 @@ const Register = () => {
             value={formData.email}
             onChange={handleChange}
           />
-          <button type="button" onClick={sendOtp}>
-            Send OTP
+          <button
+            type="button"
+            onClick={sendOtp}
+            className={`otp-btn ${isLoading.sendOtp ? "disabled" : ""}`}
+            disabled={isLoading.sendOtp}
+          >
+            {isLoading.sendOtp ? <div className="spinner"></div> : "Send OTP"}
           </button>
           {errors.email && <p>{errors.email}</p>}
         </div>
@@ -122,7 +140,12 @@ const Register = () => {
           />
           {errors.otp && <p>{errors.otp}</p>}
         </div>
-        <button>Sign up</button>
+        <button
+          className={`signup-btn ${isLoading.register ? "disabled" : ""}`}
+          disabled={isLoading.register}
+        >
+          {isLoading.register ? <div className="spinner"></div> : "Register"}
+        </button>
       </form>
     </div>
   );

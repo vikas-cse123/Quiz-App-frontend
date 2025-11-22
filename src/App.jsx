@@ -1,6 +1,9 @@
+import Register from "./components/Register";
+
 const App = () => {
-  return <h1>Hello world</h1>
+return <div>
+  <Register/>
+</div>
+};
 
-}
-
-export default App
+export default App;

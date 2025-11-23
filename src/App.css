@@ -18,6 +18,11 @@
   cursor: not-allowed;
 }
 
+btn.disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
 .spinner {
   width: 18px;
   height: 18px;

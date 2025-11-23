@@ -1,6 +1,6 @@
 import z from "zod";
 
-export const handleInputsErros = (formData, result, setErrors) => {
+export const handleInputsErrors = (formData, result, setErrors) => {
   const formatted = z.treeifyError(result.error);
   const errorsData = {};
 
@@ -13,7 +13,6 @@ export const handleInputsErros = (formData, result, setErrors) => {
       errorsData[key] = errors[0];
     }
   }
-  console.log(errorsData);
 
   setErrors(errorsData);
 };

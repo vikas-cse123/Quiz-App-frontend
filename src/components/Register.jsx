@@ -2,7 +2,21 @@ import { useState } from "react";
 import { z } from "zod";
 import toast from "react-hot-toast";
 import { callApi } from "../api/callApi";
-import { handleInputsErros } from "../utils/handleInputsErros";
+import { handleInputsErrors } from "../utils/handleInputsErrors.js"
+
+const registerSchema = z.object({
+  name: z
+    .string()
+    .min(3, "Name must have at least 3 charactets")
+    .max(30, "Name cannot be longer than 30 characters."),
+  email: z.email("Invalid Email"),
+  password: z.string().min(6, "Password must have atleast 6 characters."),
+  otp: z
+    .string()
+    .length(5, "OTP must contain exactly 5 digits")
+    .regex(/^\d+$/, "OTP must contain only digits"),
+});
+const emailSchema = registerSchema.pick({ email: true });
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -11,87 +25,80 @@ const Register = () => {
     password: "",
     otp: "",
   });
-  const [isLoading, setIsLoading] = useState({
+  //vikas-update:a function using useCalllback
+  const [loading, setLoading] = useState({
     register: false,
     sendOtp: false,
   });
-  const [isOtpSend, setIsOtpSend] = useState(false); ////
+  const [isOtpSent, setIsOtpSent] = useState(false);
   const [errors, setErrors] = useState({});
-  const registerSchema = z.object({
-    name: z
-      .string()
-      .min(3, "Name must have at least 3 charactets")
-      .max(30, "Name cannot be longer than 30 characters."),
-    email: z.email("Invalid Email"),
-    password: z.string().min(6, "Password must have atleast 6 characters."),
-    otp: z
-      .string()
-      .length(5, "OTP must contain exactly 5 digits")
-      .regex(/^\d+$/, "OTP must contain only digits"),
-  });
-  const emailSchema = registerSchema.pick({ email: true });
-
   const handleChange = (e) => {
     const { name, value } = e.target;
+    if(name === "email" && loading.sendOtp){
+      return
+    }
+    else if(loading.register){
+      return 
+    }
     setFormData((prevState) => ({ ...prevState, [name]: value }));
     setErrors({});
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    const result = registerSchema.safeParse(formData);
-    if (!result.success) {
-      handleInputsErros(formData, result, setErrors);
-      return;
-    }
-    if (!isOtpSend) {
-      toast("Click on Send OTP button to get OTP.");
-      return;
-    }
-    setIsLoading((prevState) => ({ ...prevState, register: true }));
-
-    const data = await callApi("POST", "/user/signup", formData, "");
-    console.log(data);
-    if (data.success) {
+    try {
+      e.preventDefault();
+      const result = registerSchema.safeParse(formData);
+      if (!result.success) {
+        handleInputsErrors(formData, result, setErrors);
+        return;
+      }
+      if (!isOtpSent) {
+        toast("Click on Send OTP button to get OTP.");
+        return;
+      }
+      setLoading((prevState) => ({ ...prevState, register: true }));
+      const data = await callApi("POST", "/user/signup", formData);
       toast.success(data.message);
-    } else {
-      toast.error(data.message);
+
+      setLoading((prevState) => ({ ...prevState, register: false }));
+    } catch (error) {
+      toast.error(error.message);
+      setLoading((prevState) => ({ ...prevState, register: false }));
     }
-    setIsLoading((prevState) => ({ ...prevState, register: false }));
   };
+
   const sendOtp = async () => {
     try {
-      setIsLoading((prevState) => ({ ...prevState, sendOtp: true }));
       const result = emailSchema.safeParse({ email: formData.email });
+
       if (!result.success) {
-        handleInputsErros(formData, result, setErrors);
-        setIsLoading((prevState) => ({ ...prevState, sendOtp: false }));
+        handleInputsErrors(formData, result, setErrors);
 
         return;
       }
+      setLoading((prevState) => ({ ...prevState, sendOtp: true }));
 
       const data = await callApi("POST", "/user/signup-otp", {
         email: formData.email,
         name: formData.name,
       });
-      if (data.success) {
-        toast.success(data.message);
-        setIsOtpSend(true);
-      } else {
-        toast.error(data.message);
-      }
-      setIsLoading((prevState) => ({ ...prevState, sendOtp: false }));
+      setIsOtpSent(true);
+      toast.success(data.message);
 
-      console.log(data);
+      setLoading((prevState) => ({ ...prevState, sendOtp: false }));
     } catch (error) {
-      console.log(error);
-      setIsLoading((prevState) => ({ ...prevState, sendOtp: false }));
+      toast.error(error.message);
+      setLoading((prevState) => ({ ...prevState, sendOtp: false }));
     }
   };
   return (
     <div>
       <h1>Create Account</h1>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") e.preventDefault();
+        }}
+      >
         <div>
           <label htmlFor="name">Name</label>
           <input
@@ -113,10 +120,12 @@ const Register = () => {
           <button
             type="button"
             onClick={sendOtp}
-            className={`otp-btn ${isLoading.sendOtp ? "disabled" : ""}`}
-            disabled={isLoading.sendOtp}
+            className={`otp-btn ${
+              loading.sendOtp || loading.register ? "disabled" : ""
+            }`}
+            disabled={loading.sendOtp || loading.register}
           >
-            {isLoading.sendOtp ? <div className="spinner"></div> : "Send OTP"}
+            {loading.sendOtp ? <div className="spinner"></div> : "Send OTP"}
           </button>
           {errors.email && <p>{errors.email}</p>}
         </div>
@@ -141,13 +150,21 @@ const Register = () => {
           {errors.otp && <p>{errors.otp}</p>}
         </div>
         <button
-          className={`signup-btn ${isLoading.register ? "disabled" : ""}`}
-          disabled={isLoading.register}
+          className={`signup-btn ${
+            loading.register || loading.sendOtp ? "disabled" : ""
+          }`}
+          disabled={loading.register || loading.sendOtp}
         >
-          {isLoading.register ? <div className="spinner"></div> : "Register"}
+          {loading.register ? <div className="spinner"></div> : "Register"}
         </button>
       </form>
+      <p>Have an account?</p>
+      <a href="/login">Log in</a>
     </div>
   );
 };
 export default Register;
+
+
+//node --env-file=.env app.js
+//npm run dev

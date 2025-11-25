@@ -10,7 +10,27 @@ const Quiz = () => {
     currentQuestionNumber: null,
   });
   const [question, setQuestion] = useState(null);
-  const [correctAndUserChosenOption,setCorrectAndUserChosenOption] = useState("")
+  
+  ///////
+  const [correctAndUserChosenOption,setCorrectAndUserChosenOption] = useState({
+    userChosenOption:null,
+    correctOption:null,
+  })
+useEffect(() => {
+    if(question?.isAttempt){
+    // if(question.isCorrect){
+      console.log("sahi ");
+      console.log("here");
+      setCorrectAndUserChosenOption({correctOption:question.correctAnswer,userChosenOption:question.userChosenOption})
+
+    // }
+//     else{
+// console.log("galat");
+
+//     }
+  }
+},[question])
+
 
 console.log({correctAndUserChosenOption});
 
@@ -29,22 +49,21 @@ console.log({correctAndUserChosenOption});
     }));
 
   };
-// {success: true, message: 'Incorrect answer.'}
-  //current working - first time click in option
-  const showCorrectOrWrongQuestionAttemptedState = (option) => {
-    console.log(`option :::::${option}`);
-    console.log("running showCorrectOrWrongQuestionAttemptedState");
-    const {isCorrect} = setCorrectAndUserChosenOption
-    if(isCorrect === true && userChosenOption === option){
-      return "correct"
 
-    }else if(isCorrect === false && userChosenOption === option){
-      return "wrong"
+  // const showCorrectOrWrongQuestionAttemptedState = (option) => {
+  //   console.log(`option :::::${option}`);
+  //   console.log("running showCorrectOrWrongQuestionAttemptedState");
+  //   const {isCorrect} = setCorrectAndUserChosenOption
+  //   if(isCorrect === true && userChosenOption === option){
+  //     return "correct"
 
-    }
+  //   }else if(isCorrect === false && userChosenOption === option){
+  //     return "wrong"
+
+  //   }
 
 
-  }
+  // }
   const handleOptionsClick = async (option) => {
     console.log("user clicked on this option : ",option);
     const data = await callApi("POST", `/quiz/check-ans/${quizData.currentQuestionNumber}`, {
@@ -52,13 +71,21 @@ console.log({correctAndUserChosenOption});
       quizId:quizData.quizId,
     });
     console.log(`data from api call /quiz/check/ans/${quizData.currentQuestionNumber}`,data);
-    if(data.isCorrect){
-      setCorrectAndUserChosenOption({isCorrect:true,userChosenOption:option})
+    console.log("data.isCorrect",data.isCorrect);
+    // return 
+    // //correct case
+    // if(data.isCorrect){
+    //   setCorrectAndUserChosenOption({
+    // userChosenOption:option,
+    // correctOption:option,
+    // isCorrect:true
+    //   })
+    //   // setCorrectAndUserChosenOption({isCorrect:true,userChosenOption:option})
     
-    }else{
-      setCorrectAndUserChosenOption({isCorrect:false,userChosenOption:option,correctOption:data.correctAnswer})
+    // }else{
+    //   setCorrectAndUserChosenOption({isCorrect:false,userChosenOption:option,correctOption:data.correctAnswer})
 
-    }
+    // }
   };
 
   useEffect(() => {
@@ -68,7 +95,7 @@ console.log({correctAndUserChosenOption});
       setQuizData({
         quizId: data.data.quizId,
         totalQuestions: data.data.totalQuestions,
-        currentQuestionNumber:13,
+        currentQuestionNumber:1,
       });
     })();
   }, []);
@@ -93,21 +120,11 @@ console.log({correctAndUserChosenOption});
             <p>{question.questionNumber}</p>
             <p>{question.question}</p>
           </div>
-          <div>
+          <div className="options-container">
             {question.options.map((option, i) => (
-              <div key={i} className="option-container">
-                <div
-                className={`${setCorrectAndUserChosenOption && showCorrectOrWrongQuestionAttemptedState(option)}`}
-                  onClick={() => {
-                    handleOptionsClick(option);
-                  }}
-                >
-                  {option}
+              <div key={i} className={`option-container ${correctAndUserChosenOption.correctOption === option ? "correct" : correctAndUserChosenOption.userChosenOption === option ? "wrong" : ""} `} >
+               <p onClick={() => {handleOptionsClick(option)}}> {option}</p>
 
-                  {/* {
-                    i >-1 ? <img src={correctIcon} alt="" /> : ""
-                  } */}
-                </div>
               </div>
             ))}
           </div>

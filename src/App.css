@@ -49,11 +49,14 @@ btn.disabled {
 .correct{
   color: #35BD3A;
   background-color: #35BD3A;
+  color: black;
 
 }
 .wrong{
 color: #FF7A7A;
 background-color: #FF7A7A;
+  color: black;
+
 }
 @keyframes spin {
   100% {

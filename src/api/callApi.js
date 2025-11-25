@@ -1,12 +1,13 @@
 export const callApi = async (method, url, body) => {
   try {
     const baseUrl = import.meta.env.VITE_API_URL;
-    const properties = { method };
+    const properties = { method ,credentials : "include"};
     if (body) {
       properties.headers = {
         "Content-Type": "application/json",
       };
-      properties.body = JSON.stringify(body);
+      properties.body = JSON.stringify(body)
+      
     }
 
     const res = await fetch(`${baseUrl}${url}`, properties);

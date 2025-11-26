@@ -1,13 +1,12 @@
 export const callApi = async (method, url, body) => {
   try {
     const baseUrl = import.meta.env.VITE_API_URL;
-    const properties = { method ,credentials : "include"};
+    const properties = { method, credentials: "include" };
     if (body) {
       properties.headers = {
         "Content-Type": "application/json",
       };
-      properties.body = JSON.stringify(body)
-      
+      properties.body = JSON.stringify(body);
     }
 
     const res = await fetch(`${baseUrl}${url}`, properties);
@@ -18,8 +17,7 @@ export const callApi = async (method, url, body) => {
 
     return data;
   } catch (error) {
-
-        if (!navigator.onLine) {
+    if (!navigator.onLine) {
       throw {
         success: false,
         message: "You are offline. Connect to the internet.",
@@ -29,8 +27,9 @@ export const callApi = async (method, url, body) => {
     throw {
       success: false,
       message:
-        error.message === "Failed to fetch" ? 
-        "Unexpected error occurred. Try again later." : error.message
+        error.message === "Failed to fetch"
+          ? "Unexpected error occurred. Try again later."
+          : error.message,
     };
   }
   //   console.log("eeee", error);

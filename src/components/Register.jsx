@@ -2,7 +2,7 @@ import { useState } from "react";
 import { z } from "zod";
 import toast from "react-hot-toast";
 import { callApi } from "../api/callApi";
-import { handleInputsErrors } from "../utils/handleInputsErrors.js"
+import { handleInputsErrors } from "../utils/handleInputsErrors.js";
 
 const registerSchema = z.object({
   name: z
@@ -34,11 +34,10 @@ const Register = () => {
   const [errors, setErrors] = useState({});
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if(name === "email" && loading.sendOtp){
-      return
-    }
-    else if(loading.register){
-      return 
+    if (name === "email" && loading.sendOtp) {
+      return;
+    } else if (loading.register) {
+      return;
     }
     setFormData((prevState) => ({ ...prevState, [name]: value }));
     setErrors({});
@@ -94,7 +93,8 @@ const Register = () => {
   return (
     <div>
       <h1>Create Account</h1>
-      <form onSubmit={handleSubmit}
+      <form
+        onSubmit={handleSubmit}
         onKeyDown={(e) => {
           if (e.key === "Enter") e.preventDefault();
         }}
@@ -164,7 +164,6 @@ const Register = () => {
   );
 };
 export default Register;
-
 
 //node --env-file=.env app.js
 //npm run dev

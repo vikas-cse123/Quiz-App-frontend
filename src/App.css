@@ -1,8 +1,7 @@
-header{
+header {
   display: flex;
   justify-content: space-between;
 }
-
 
 .otp-btn {
   width: 120px;
@@ -46,17 +45,15 @@ btn.disabled {
   cursor: not-allowed;
 }
 
-.correct{
-  color: #35BD3A;
-  background-color: #35BD3A;
+.correct {
+  color: #35bd3a;
+  background-color: #35bd3a;
   color: black;
-
 }
-.wrong{
-color: #FF7A7A;
-background-color: #FF7A7A;
+.wrong {
+  color: #ff0000;
+  background-color: #ff0000;
   color: black;
-
 }
 @keyframes spin {
   100% {

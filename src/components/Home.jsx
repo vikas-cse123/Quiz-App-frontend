@@ -1,11 +1,16 @@
-import Header from "./Header"
+import Header from "./Header";
 
 const Home = () => {
-    return <div>
-        <button><a href="">Create Quiz</a></button>
-        <button><a href="">Continue Last Quiz</a></button>
-
+  return (
+    <div>
+      <button>
+        <a href="">Create Quiz</a>
+      </button>
+      <button>
+        <a href="">Continue Last Quiz</a>
+      </button>
     </div>
-}
+  );
+};
 
-export default Home
+export default Home;

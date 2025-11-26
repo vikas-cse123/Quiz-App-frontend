@@ -1,53 +1,61 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { callApi } from "../api/callApi";
-import correctIcon from "../assets/correct.svg"
-import wrongIcon from "../assets/wrong.svg"
-
+import correctIcon from "../assets/correct.svg";
+import wrongIcon from "../assets/wrong.svg";
+const optionSerialNumberList = ["A","B","c","D"]
 const Quiz = () => {
+  console.log("quiz component render");
   const [quizData, setQuizData] = useState({
     quizId: null,
     totalQuestions: null,
     currentQuestionNumber: null,
   });
   const [question, setQuestion] = useState(null);
-  
+
   ///////
-  const [correctAndUserChosenOption,setCorrectAndUserChosenOption] = useState({
-    userChosenOption:null,
-    correctOption:null,
-  })
-useEffect(() => {
-    if(question?.isAttempt){
-    // if(question.isCorrect){
-      console.log("sahi ");
-      console.log("here");
-      setCorrectAndUserChosenOption({correctOption:question.correctAnswer,userChosenOption:question.userChosenOption})
+  const [correctAndUserChosenOption, setCorrectAndUserChosenOption] = useState({
+    userChosenOption: null,
+    correctOption: null,
+  });
+  useEffect(() => {
+    if (question?.isAttempt) {
+      // if(question.isCorrect){
 
-    // }
-//     else{
-// console.log("galat");
+      setCorrectAndUserChosenOption({
+        correctOption: question.correctAnswer,
+        userChosenOption: question.userChosenOption,
+      });
 
-//     }
-  }
-},[question])
+      // }
+      //     else{
+      // console.log("galat");
 
+      //     }
+    }
+  }, [question]);
 
-console.log({correctAndUserChosenOption});
-
-
+  console.log({ correctAndUserChosenOption });
 
   const getNextQuestion = () => {
+    setCorrectAndUserChosenOption({
+      correctOption: null,
+      userChosenOption: null,
+    });
     setQuizData((prevState) => ({
       ...prevState,
       currentQuestionNumber: prevState.currentQuestionNumber + 1,
     }));
   };
   const getPreviousQuestion = () => {
+    setCorrectAndUserChosenOption({
+      correctOption: null,
+      userChosenOption: null,
+    });
+
     setQuizData((prevState) => ({
       ...prevState,
       currentQuestionNumber: prevState.currentQuestionNumber - 1,
     }));
-
   };
 
   // const showCorrectOrWrongQuestionAttemptedState = (option) => {
@@ -62,17 +70,21 @@ console.log({correctAndUserChosenOption});
 
   //   }
 
-
   // }
   const handleOptionsClick = async (option) => {
-    console.log("user clicked on this option : ",option);
-    const data = await callApi("POST", `/quiz/check-ans/${quizData.currentQuestionNumber}`, {
-      userSelectedOption: option,
-      quizId:quizData.quizId,
-    });
-    console.log(`data from api call /quiz/check/ans/${quizData.currentQuestionNumber}`,data);
-    console.log("data.isCorrect",data.isCorrect);
-    // return 
+    // console.log("user clicked on this option : ",option);
+    const data = await callApi(
+      "POST",
+      `/quiz/check-ans/${quizData.currentQuestionNumber}`,
+      {
+        userSelectedOption: option,
+        quizId: quizData.quizId,
+      },
+    );
+    setQuizData((prevState) => ({ ...prevState }));
+    // console.log(`data from api call /quiz/check/ans/${quizData.currentQuestionNumber}`,data);
+    // console.log("data.isCorrect",data.isCorrect);
+    // return
     // //correct case
     // if(data.isCorrect){
     //   setCorrectAndUserChosenOption({
@@ -81,7 +93,7 @@ console.log({correctAndUserChosenOption});
     // isCorrect:true
     //   })
     //   // setCorrectAndUserChosenOption({isCorrect:true,userChosenOption:option})
-    
+
     // }else{
     //   setCorrectAndUserChosenOption({isCorrect:false,userChosenOption:option,correctOption:data.correctAnswer})
 
@@ -95,7 +107,7 @@ console.log({correctAndUserChosenOption});
       setQuizData({
         quizId: data.data.quizId,
         totalQuestions: data.data.totalQuestions,
-        currentQuestionNumber:1,
+        currentQuestionNumber: 1,
       });
     })();
   }, []);
@@ -107,7 +119,7 @@ console.log({correctAndUserChosenOption});
         `/quiz/question/${quizData.currentQuestionNumber}`,
         {
           quizId: quizData.quizId,
-        }
+        },
       );
       setQuestion(data.data);
     })();
@@ -117,14 +129,33 @@ console.log({correctAndUserChosenOption});
       {question && (
         <div>
           <div>
-            <p>{question.questionNumber}</p>
+            <p>Q. {question.questionNumber}</p>
             <p>{question.question}</p>
           </div>
           <div className="options-container">
             {question.options.map((option, i) => (
-              <div key={i} className={`option-container ${correctAndUserChosenOption.correctOption === option ? "correct" : correctAndUserChosenOption.userChosenOption === option ? "wrong" : ""} `} >
-               <p onClick={() => {handleOptionsClick(option)}}> {option}</p>
-
+              <div
+                key={i}
+                className={`option-container ${correctAndUserChosenOption.correctOption === option ? "correct" : correctAndUserChosenOption.userChosenOption === option ? "wrong" : ""} `}
+              >
+                <p
+                  onClick={() => {
+                    handleOptionsClick(option);
+                  }}
+                >
+                  {" "}
+                  {optionSerialNumberList[i]}{option}
+                </p>
+                {correctAndUserChosenOption.correctOption === option ? (
+                  <img src={correctIcon} alt="" />
+                ) : correctAndUserChosenOption.userChosenOption === option ? (
+                  <p>
+                    You chose
+                    <img src={wrongIcon} alt="" />
+                  </p>
+                ) : (
+                  ""
+                )}
               </div>
             ))}
           </div>

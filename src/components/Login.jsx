@@ -42,7 +42,7 @@ const Login = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if(isloading) return
+    if (isloading) return;
     setFormData((prevState) => ({ ...prevState, [name]: value }));
     setErrors({});
   };

@@ -12,11 +12,11 @@ const App = () => {
       <Toaster position="top-right" />
       {/* <Register /> */}
       {/* <Login/> */}
-        <Header/>
+      <Header />
 
       {/* <Home/> */}
       {/* <QuizSettings/> */}
-      <Quiz/>
+      <Quiz />
     </div>
   );
 };

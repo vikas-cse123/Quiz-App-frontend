@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { callApi } from "../api/callApi";
 import correctIcon from "../assets/correct.svg";
 import wrongIcon from "../assets/wrong.svg";
-const optionSerialNumberList = ["A","B","c","D"]
+const optionSerialNumberList = ["A.", "B.", "C.", "D."];
 const Quiz = () => {
   console.log("quiz component render");
   const [quizData, setQuizData] = useState({
@@ -71,6 +71,10 @@ const Quiz = () => {
   //   }
 
   // }
+  const handleResultButtonClick = async () => {
+    const data = await callApi("POST",`/quiz/end/${quizData.quizId}`)
+    console.log(data);
+  };
   const handleOptionsClick = async (option) => {
     // console.log("user clicked on this option : ",option);
     const data = await callApi(
@@ -79,7 +83,7 @@ const Quiz = () => {
       {
         userSelectedOption: option,
         quizId: quizData.quizId,
-      },
+      }
     );
     setQuizData((prevState) => ({ ...prevState }));
     // console.log(`data from api call /quiz/check/ans/${quizData.currentQuestionNumber}`,data);
@@ -119,7 +123,7 @@ const Quiz = () => {
         `/quiz/question/${quizData.currentQuestionNumber}`,
         {
           quizId: quizData.quizId,
-        },
+        }
       );
       setQuestion(data.data);
     })();
@@ -129,14 +133,30 @@ const Quiz = () => {
       {question && (
         <div>
           <div>
-            <p>Q. {question.questionNumber}</p>
-            <p>{question.question}</p>
+            <p>
+              {" "}
+              Question No. {question.questionNumber} of{" "}
+              {quizData.totalQuestions}
+            </p>
+            <p>{question.category}</p>
+            <p>{question.difficulty}</p>
+            <p>Q.{question.question}</p>
+            <p>
+              {question.currentScore}/ {question.totalScore}
+            </p>
           </div>
           <div className="options-container">
+            <p>Please choose one of the following answers:</p>
             {question.options.map((option, i) => (
               <div
                 key={i}
-                className={`option-container ${correctAndUserChosenOption.correctOption === option ? "correct" : correctAndUserChosenOption.userChosenOption === option ? "wrong" : ""} `}
+                className={`option-container ${
+                  correctAndUserChosenOption.correctOption === option
+                    ? "correct"
+                    : correctAndUserChosenOption.userChosenOption === option
+                    ? "wrong"
+                    : ""
+                } `}
               >
                 <p
                   onClick={() => {
@@ -144,7 +164,7 @@ const Quiz = () => {
                   }}
                 >
                   {" "}
-                  {optionSerialNumberList[i]}{option}
+                  {optionSerialNumberList[i]} {option}
                 </p>
                 {correctAndUserChosenOption.correctOption === option ? (
                   <img src={correctIcon} alt="" />
@@ -173,7 +193,7 @@ const Quiz = () => {
             </div>
             {quizData.totalQuestions <= quizData.currentQuestionNumber ? (
               <div>
-                <button>Result</button>
+                <button onClick={handleResultButtonClick}>Result</button>
               </div>
             ) : (
               ""

@@ -8,7 +8,7 @@ export const callApi = async (method, url, body) => {
       };
       properties.body = JSON.stringify(body);
     }
-
+console.log({properties});
     const res = await fetch(`${baseUrl}${url}`, properties);
     const data = await res.json();
     if (!data.success) {
@@ -17,6 +17,7 @@ export const callApi = async (method, url, body) => {
 
     return data;
   } catch (error) {
+    console.log(error);
     if (!navigator.onLine) {
       throw {
         success: false,

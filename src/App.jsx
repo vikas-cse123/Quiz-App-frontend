@@ -6,6 +6,7 @@ import Home from "./components/Home";
 import Header from "./components/Header";
 import QuizSettings from "./components/quizSettings";
 import Quiz from "./components/Quiz";
+import QuizResult from "./components/QuizResult";
 const App = () => {
   return (
     <div>
@@ -16,7 +17,9 @@ const App = () => {
 
       {/* <Home/> */}
       {/* <QuizSettings/> */}
-      <Quiz />
+      {/* <Quiz /> */}
+      <QuizResult/>
+  
     </div>
   );
 };
